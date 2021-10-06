@@ -20,7 +20,7 @@ blueprint:
             domain: light
 
     low_price:
-      name: low_price
+      name: Low price
       description: Price above this threshold will show green. Below will show Cyan
       selector:
         number:
@@ -30,7 +30,7 @@ blueprint:
       default: 0.16
 
     average_price:
-      name: averge_price
+      name: Average price
       description: Price above this threshold will show yellow.
       selector:
         number:
@@ -40,7 +40,7 @@ blueprint:
       default: 0.25
 
     high_price:
-      name: high_price
+      name: High price
       description: Price above this threshold will show red.
       selector:
         number:
