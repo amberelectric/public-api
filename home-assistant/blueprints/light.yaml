@@ -1,0 +1,78 @@
+blueprint:
+  name: Amber Light
+  description: Change the colour of a lamp based on the current Amber price
+  domain: automation
+  input:
+    amber_price_sensor:
+      name: Amber Price Sensor
+      description: The Amber price sensor you wish to track. If in doubt, use General Price.
+      selector:
+        entity:
+          integration: amberelectric
+          domain: sensor
+
+    target_light:
+      name: Light
+      description: The light you wish to use as the indicator
+      selector:
+        target:
+          entity:
+            domain: light
+
+    low_price:
+      name: low_price
+      description: Price above this threshold will show green. Below will show Cyan
+      selector:
+        number:
+          mode: box
+          min: -1
+          max: 16.5
+      default: 0.16
+
+    average_price:
+      name: averge_price
+      description: Price above this threshold will show yellow.
+      selector:
+        number:
+          min: -1
+          max: 16.5
+          mode: box
+      default: 0.25
+
+    high_price:
+      name: high_price
+      description: Price above this threshold will show red.
+      selector:
+        number:
+          min: -1
+          max: 16.5
+          mode: box
+      default: 0.4
+
+trigger:
+  - platform: state
+    entity_id: !input amber_price_sensor
+
+action:
+  - variables:
+      spot_price: "{{ trigger.to_state.attributes.spot_per_kwh }}"
+      customer_price: "{{ trigger.to_state.attributes.per_kwh }}"
+      low_price: !input low_price
+      average_price: !input average_price
+      high_price: !input high_price
+
+  - service: light.turn_on
+    target: !input target_light
+    data:
+      color_name: >
+        {% if spot_price >= 3 %}
+          purple
+        {% elif customer_price > high_price %}
+          red
+        {% elif customer_price > average_price %}
+          orange
+        {% elif customer_price > low_price %}
+          green
+        {% else %}
+          cyan
+        {% endif %}
