@@ -27,6 +27,7 @@ blueprint:
           mode: box
           min: -1
           max: 16.5
+          step: 0.01
       default: 0.16
 
     average_price:
@@ -34,9 +35,10 @@ blueprint:
       description: Price above this threshold will show yellow.
       selector:
         number:
+          mode: box
           min: -1
           max: 16.5
-          mode: box
+          step: 0.01
       default: 0.25
 
     high_price:
@@ -44,9 +46,10 @@ blueprint:
       description: Price above this threshold will show red.
       selector:
         number:
+          mode: box
           min: -1
           max: 16.5
-          mode: box
+          step: 0.01
       default: 0.4
 
 trigger:
