@@ -18,7 +18,7 @@ blueprint:
         target:
           entity:
             domain: light
-  source_url: https://github.com/amberelectric/public-api/blob/main/home-assistant/blueprints/light.yaml
+
 trigger:
 - platform: state
   entity_id: !input 'amber_price_descriptor'
