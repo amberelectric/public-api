@@ -37,9 +37,9 @@ action:
         darkorange
       {% elif price_descriptor == 'low' %}
         orange
-      {% elif price_descriptor == 'verylow' %}
+      {% elif price_descriptor == 'very_low' %}
         green
-      {% elif price_descriptor == 'extremelyLow' %}
+      {% elif price_descriptor == 'extremely_low' %}
         cyan
       {% else %}
         white
