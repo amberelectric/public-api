@@ -697,7 +697,9 @@
               "application/json": {
                 "schema": {
                   "type": "array",
-                  "$ref": "#/components/schemas/Site"
+                  "items": {
+                    "$ref": "#/components/schemas/Site"
+                  }
                 }
               }
             }
