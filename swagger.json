@@ -272,8 +272,6 @@
             "$ref": "#/components/schemas/ChannelType"
           },
           "tariffInformation": {
-            "type": "object",
-            "description": "Information about how your tariff is affecting this interval",
             "nullable": true,
             "$ref": "#/components/schemas/TariffInformation"
           },
