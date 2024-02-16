@@ -736,6 +736,7 @@
             "example": "2021-05-05",
             "required": false,
             "schema": {
+              "type": "string",
               "format": "date"
             }
           },
@@ -746,6 +747,7 @@
             "example": "2021-05-05",
             "required": false,
             "schema": {
+              "type": "string",
               "format": "date-time"
             }
           },
@@ -985,6 +987,7 @@
             "example": "2021-05-05",
             "required": true,
             "schema": {
+              "type": "string",
               "format": "date"
             }
           },
@@ -995,6 +998,7 @@
             "example": "2021-05-05",
             "required": true,
             "schema": {
+              "type": "string",
               "format": "date-time"
             }
           },
