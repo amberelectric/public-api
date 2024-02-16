@@ -418,7 +418,7 @@
           "startTime",
           "endTime",
           "renewables",
-          "renewablePriceDescriptor"
+          "descriptor"
         ],
         "properties": {
           "type": {
