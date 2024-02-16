@@ -32,14 +32,7 @@
             "example": "E1"
           },
           "type": {
-            "type": "string",
-            "enum": [
-              "general",
-              "controlledLoad",
-              "feedIn"
-            ],
-            "description": "Channel type.",
-            "example": "general"
+            "$ref": "#/components/schemas/ChannelType"
           },
           "tariff": {
             "type": "string",
