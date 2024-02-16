@@ -748,7 +748,7 @@
             "required": false,
             "schema": {
               "type": "string",
-              "format": "date-time"
+              "format": "date"
             }
           },
           {
@@ -999,7 +999,7 @@
             "required": true,
             "schema": {
               "type": "string",
-              "format": "date-time"
+              "format": "date"
             }
           },
           {
