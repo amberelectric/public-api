@@ -137,7 +137,8 @@
           "general",
           "controlledLoad",
           "feedIn"
-        ]
+        ],
+        "example": "general"
       },
       "Range": {
         "type": "object",
