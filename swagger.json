@@ -74,35 +74,7 @@
             "type": "array",
             "description": "List of channels that are readable from your meter",
             "items": {
-              "type": "object",
-              "description": "Describes a power meter channel.\n\nThe General channel provides continuous power - it's the channel all of your appliances and lights are attached to.\n\nControlled loads are only on for a limited time during the day (usually when the load on the network is low, or generation is high) - you may have your hot water system attached to this channel.\n\nThe feed in channel sends power back to the grid - you will have these types of channels if you have solar or batteries.",
-              "required": [
-                "identifier",
-                "type",
-                "tariff"
-              ],
-              "properties": {
-                "identifier": {
-                  "type": "string",
-                  "description": "Identifier of the channel",
-                  "example": "E1"
-                },
-                "type": {
-                  "type": "string",
-                  "enum": [
-                    "general",
-                    "controlledLoad",
-                    "feedIn"
-                  ],
-                  "description": "Channel type.",
-                  "example": "general"
-                },
-                "tariff": {
-                  "type": "string",
-                  "description": "The tariff code of the channel",
-                  "example": "A100"
-                }
-              }
+              "$ref": "#/components/schemas/Channel"
             }
           },
           "network": {
@@ -131,6 +103,48 @@
             "example": "2022-05-01"
           }
         }
+      },
+      "SpikeStatus": {
+        "type": "string",
+        "description": "Indicates whether this interval will potentially spike, or is currently in a spike state",
+        "enum": [
+          "none",
+          "potential",
+          "spike"
+        ]
+      },
+      "PriceDescriptor": {
+        "type": "string",
+        "description": "Describes the current price. Gives you an indication of how cheap the price is in relation to the average VMO and DMO. Note: Negative is no longer used. It has been replaced with extremelyLow.",
+        "enum": [
+          "negative",
+          "extremelyLow",
+          "veryLow",
+          "low",
+          "neutral",
+          "high",
+          "spike"
+        ]
+      },
+      "RenewableDescriptor": {
+        "type": "string",
+        "description": "Describes the state of renewables. Gives you an indication of how green power is right now",
+        "enum": [
+          "best",
+          "great",
+          "ok",
+          "notGreat",
+          "worst"
+        ]
+      },
+      "ChannelType": {
+        "type": "string",
+        "description": "Meter channel type",
+        "enum": [
+          "general",
+          "controlledLoad",
+          "feedIn"
+        ]
       },
       "Range": {
         "type": "object",
@@ -207,12 +221,9 @@
           "renewables",
           "channelType",
           "spikeStatus",
-          "priceDescriptor"
+          "descriptor"
         ],
         "properties": {
-          "type": {
-            "type": "string"
-          },
           "duration": {
             "type": "number",
             "description": "Length of the interval in minutes.",
@@ -264,78 +275,19 @@
             "example": "45"
           },
           "channelType": {
-            "type": "string",
-            "description": "Meter channel type",
-            "enum": [
-              "general",
-              "controlledLoad",
-              "feedIn"
-            ]
+            "$ref": "#/components/schemas/ChannelType"
           },
           "tariffInformation": {
             "type": "object",
             "description": "Information about how your tariff is affecting this interval",
             "nullable": true,
-            "properties": {
-              "period": {
-                "type": "string",
-                "enum": [
-                  "offPeak",
-                  "shoulder",
-                  "solarSponge",
-                  "peak"
-                ],
-                "description": "The Time of Use period that is currently active. Only available if the site in on a time of use tariff"
-              },
-              "season": {
-                "type": "string",
-                "enum": [
-                  "default",
-                  "summer",
-                  "autumn",
-                  "winter",
-                  "spring",
-                  "nonSummer",
-                  "holiday",
-                  "weekend",
-                  "weekendHoliday",
-                  "weekday"
-                ],
-                "description": "The Time of Use season that is currently active. Only available if the site in on a time of use tariff"
-              },
-              "block": {
-                "type": "number",
-                "minimum": 1,
-                "maximum": 2,
-                "description": "The block that is currently active. Only available in the site in on a block tariff"
-              },
-              "demandWindow": {
-                "type": "boolean",
-                "description": "Is this interval currently in the demand window? Only available if the site in on a demand tariff"
-              }
-            }
+            "$ref": "#/components/schemas/TariffInformation"
           },
           "spikeStatus": {
-            "type": "string",
-            "description": "Indicates whether this interval will potentially spike, or is currently in a spike state",
-            "enum": [
-              "none",
-              "potential",
-              "spike"
-            ]
+            "$ref": "#/components/schemas/SpikeStatus"
           },
           "descriptor": {
-            "type": "string",
-            "description": "Describes the current price. Gives you an indication of how cheap the price is in relation to the average VMO and DMO. Note: Negative is no longer used. It has been replaced with extremelyLow.",
-            "enum": [
-              "negative",
-              "extremelyLow",
-              "veryLow",
-              "low",
-              "neutral",
-              "high",
-              "spike"
-            ]
+            "$ref": "#/components/schemas/PriceDescriptor"
           }
         }
       },
@@ -356,7 +308,7 @@
               "renewables",
               "channelType",
               "spikeStatus",
-              "priceDescriptor"
+              "descriptor"
             ],
             "properties": {
               "type": {
@@ -413,78 +365,19 @@
                 "example": "45"
               },
               "channelType": {
-                "type": "string",
-                "description": "Meter channel type",
-                "enum": [
-                  "general",
-                  "controlledLoad",
-                  "feedIn"
-                ]
+                "$ref": "#/components/schemas/ChannelType"
               },
               "tariffInformation": {
                 "type": "object",
                 "description": "Information about how your tariff is affecting this interval",
                 "nullable": true,
-                "properties": {
-                  "period": {
-                    "type": "string",
-                    "enum": [
-                      "offPeak",
-                      "shoulder",
-                      "solarSponge",
-                      "peak"
-                    ],
-                    "description": "The Time of Use period that is currently active. Only available if the site in on a time of use tariff"
-                  },
-                  "season": {
-                    "type": "string",
-                    "enum": [
-                      "default",
-                      "summer",
-                      "autumn",
-                      "winter",
-                      "spring",
-                      "nonSummer",
-                      "holiday",
-                      "weekend",
-                      "weekendHoliday",
-                      "weekday"
-                    ],
-                    "description": "The Time of Use season that is currently active. Only available if the site in on a time of use tariff"
-                  },
-                  "block": {
-                    "type": "number",
-                    "minimum": 1,
-                    "maximum": 2,
-                    "description": "The block that is currently active. Only available in the site in on a block tariff"
-                  },
-                  "demandWindow": {
-                    "type": "boolean",
-                    "description": "Is this interval currently in the demand window? Only available if the site in on a demand tariff"
-                  }
-                }
+                "$ref": "#/components/schemas/TariffInformation"
               },
               "spikeStatus": {
-                "type": "string",
-                "description": "Indicates whether this interval will potentially spike, or is currently in a spike state",
-                "enum": [
-                  "none",
-                  "potential",
-                  "spike"
-                ]
+                "$ref": "#/components/schemas/SpikeStatus"
               },
               "descriptor": {
-                "type": "string",
-                "description": "Describes the current price. Gives you an indication of how cheap the price is in relation to the average VMO and DMO. Note: Negative is no longer used. It has been replaced with extremelyLow.",
-                "enum": [
-                  "negative",
-                  "extremelyLow",
-                  "veryLow",
-                  "low",
-                  "neutral",
-                  "high",
-                  "spike"
-                ]
+                "$ref": "#/components/schemas/PriceDescriptor"
               }
             }
           },
@@ -518,7 +411,7 @@
               "renewables",
               "channelType",
               "spikeStatus",
-              "priceDescriptor"
+              "descriptor"
             ],
             "properties": {
               "type": {
@@ -575,78 +468,19 @@
                 "example": "45"
               },
               "channelType": {
-                "type": "string",
-                "description": "Meter channel type",
-                "enum": [
-                  "general",
-                  "controlledLoad",
-                  "feedIn"
-                ]
+                "$ref": "#/components/schemas/ChannelType"
               },
               "tariffInformation": {
                 "type": "object",
                 "description": "Information about how your tariff is affecting this interval",
                 "nullable": true,
-                "properties": {
-                  "period": {
-                    "type": "string",
-                    "enum": [
-                      "offPeak",
-                      "shoulder",
-                      "solarSponge",
-                      "peak"
-                    ],
-                    "description": "The Time of Use period that is currently active. Only available if the site in on a time of use tariff"
-                  },
-                  "season": {
-                    "type": "string",
-                    "enum": [
-                      "default",
-                      "summer",
-                      "autumn",
-                      "winter",
-                      "spring",
-                      "nonSummer",
-                      "holiday",
-                      "weekend",
-                      "weekendHoliday",
-                      "weekday"
-                    ],
-                    "description": "The Time of Use season that is currently active. Only available if the site in on a time of use tariff"
-                  },
-                  "block": {
-                    "type": "number",
-                    "minimum": 1,
-                    "maximum": 2,
-                    "description": "The block that is currently active. Only available in the site in on a block tariff"
-                  },
-                  "demandWindow": {
-                    "type": "boolean",
-                    "description": "Is this interval currently in the demand window? Only available if the site in on a demand tariff"
-                  }
-                }
+                "$ref": "#/components/schemas/TariffInformation"
               },
               "spikeStatus": {
-                "type": "string",
-                "description": "Indicates whether this interval will potentially spike, or is currently in a spike state",
-                "enum": [
-                  "none",
-                  "potential",
-                  "spike"
-                ]
+                "$ref": "#/components/schemas/SpikeStatus"
               },
               "descriptor": {
-                "type": "string",
-                "description": "Describes the current price. Gives you an indication of how cheap the price is in relation to the average VMO and DMO. Note: Negative is no longer used. It has been replaced with extremelyLow.",
-                "enum": [
-                  "negative",
-                  "extremelyLow",
-                  "veryLow",
-                  "low",
-                  "neutral",
-                  "high",
-                  "spike"
-                ]
+                "$ref": "#/components/schemas/PriceDescriptor"
               }
             }
           },
@@ -662,22 +496,7 @@
               },
               "range": {
                 "nullable": true,
-                "type": "object",
-                "description": "When prices are particularly volatile, the API may return a range of prices that are possible.",
-                "required": [
-                  "min",
-                  "max"
-                ],
-                "properties": {
-                  "min": {
-                    "type": "number",
-                    "description": "Estimated minimum price (c/kWh)"
-                  },
-                  "max": {
-                    "type": "number",
-                    "description": "Estimated maximum price (c/kWh)"
-                  }
-                }
+                "$ref": "#/components/schemas/Range"
               }
             }
           }
@@ -700,7 +519,7 @@
               "renewables",
               "channelType",
               "spikeStatus",
-              "priceDescriptor"
+              "descriptor"
             ],
             "properties": {
               "type": {
@@ -757,78 +576,18 @@
                 "example": "45"
               },
               "channelType": {
-                "type": "string",
-                "description": "Meter channel type",
-                "enum": [
-                  "general",
-                  "controlledLoad",
-                  "feedIn"
-                ]
+                "$ref": "#/components/schemas/ChannelType"
               },
               "tariffInformation": {
                 "type": "object",
-                "description": "Information about how your tariff is affecting this interval",
                 "nullable": true,
-                "properties": {
-                  "period": {
-                    "type": "string",
-                    "enum": [
-                      "offPeak",
-                      "shoulder",
-                      "solarSponge",
-                      "peak"
-                    ],
-                    "description": "The Time of Use period that is currently active. Only available if the site in on a time of use tariff"
-                  },
-                  "season": {
-                    "type": "string",
-                    "enum": [
-                      "default",
-                      "summer",
-                      "autumn",
-                      "winter",
-                      "spring",
-                      "nonSummer",
-                      "holiday",
-                      "weekend",
-                      "weekendHoliday",
-                      "weekday"
-                    ],
-                    "description": "The Time of Use season that is currently active. Only available if the site in on a time of use tariff"
-                  },
-                  "block": {
-                    "type": "number",
-                    "minimum": 1,
-                    "maximum": 2,
-                    "description": "The block that is currently active. Only available in the site in on a block tariff"
-                  },
-                  "demandWindow": {
-                    "type": "boolean",
-                    "description": "Is this interval currently in the demand window? Only available if the site in on a demand tariff"
-                  }
-                }
+                "$ref": "#/components/schemas/TariffInformation"
               },
               "spikeStatus": {
-                "type": "string",
-                "description": "Indicates whether this interval will potentially spike, or is currently in a spike state",
-                "enum": [
-                  "none",
-                  "potential",
-                  "spike"
-                ]
+                "$ref": "#/components/schemas/SpikeStatus"
               },
               "descriptor": {
-                "type": "string",
-                "description": "Describes the current price. Gives you an indication of how cheap the price is in relation to the average VMO and DMO. Note: Negative is no longer used. It has been replaced with extremelyLow.",
-                "enum": [
-                  "negative",
-                  "extremelyLow",
-                  "veryLow",
-                  "low",
-                  "neutral",
-                  "high",
-                  "spike"
-                ]
+                "$ref": "#/components/schemas/PriceDescriptor"
               }
             }
           },
@@ -847,22 +606,7 @@
               },
               "range": {
                 "nullable": true,
-                "type": "object",
-                "description": "When prices are particularly volatile, the API may return a range of prices that are possible.",
-                "required": [
-                  "min",
-                  "max"
-                ],
-                "properties": {
-                  "min": {
-                    "type": "number",
-                    "description": "Estimated minimum price (c/kWh)"
-                  },
-                  "max": {
-                    "type": "number",
-                    "description": "Estimated maximum price (c/kWh)"
-                  }
-                }
+                "$ref": "#/components/schemas/Range"
               },
               "estimate": {
                 "type": "boolean",
@@ -889,7 +633,7 @@
               "renewables",
               "channelType",
               "spikeStatus",
-              "priceDescriptor"
+              "PriceDescriptor"
             ],
             "properties": {
               "type": {
@@ -946,13 +690,7 @@
                 "example": "45"
               },
               "channelType": {
-                "type": "string",
-                "description": "Meter channel type",
-                "enum": [
-                  "general",
-                  "controlledLoad",
-                  "feedIn"
-                ]
+                "$ref": "#/components/schemas/ChannelType"
               },
               "tariffInformation": {
                 "type": "object",
@@ -1072,7 +810,7 @@
           "startTime",
           "endTime",
           "renewables",
-          "renewableDescriptor"
+          "renewablePriceDescriptor"
         ],
         "properties": {
           "type": {
@@ -1119,15 +857,7 @@
             "example": "45"
           },
           "descriptor": {
-            "type": "string",
-            "description": "Describes the state of renewables. Gives you an indication of how green power is right now",
-            "enum": [
-              "best",
-              "great",
-              "ok",
-              "notGreat",
-              "worst"
-            ]
+            "$ref": "#/components/schemas/RenewableDescriptor"
           }
         }
       },
@@ -1144,7 +874,7 @@
               "startTime",
               "endTime",
               "renewables",
-              "renewableDescriptor"
+              "renewablePriceDescriptor"
             ],
             "properties": {
               "type": {
@@ -1191,15 +921,7 @@
                 "example": "45"
               },
               "descriptor": {
-                "type": "string",
-                "description": "Describes the state of renewables. Gives you an indication of how green power is right now",
-                "enum": [
-                  "best",
-                  "great",
-                  "ok",
-                  "notGreat",
-                  "worst"
-                ]
+                "$ref": "#/components/schemas/RenewableDescriptor"
               }
             }
           },
@@ -1229,7 +951,7 @@
               "startTime",
               "endTime",
               "renewables",
-              "renewableDescriptor"
+              "renewablePriceDescriptor"
             ],
             "properties": {
               "type": {
@@ -1276,15 +998,7 @@
                 "example": "45"
               },
               "descriptor": {
-                "type": "string",
-                "description": "Describes the state of renewables. Gives you an indication of how green power is right now",
-                "enum": [
-                  "best",
-                  "great",
-                  "ok",
-                  "notGreat",
-                  "worst"
-                ]
+                "$ref": "#/components/schemas/RenewableDescriptor"
               }
             }
           },
@@ -1315,7 +1029,7 @@
               "startTime",
               "endTime",
               "renewables",
-              "renewableDescriptor"
+              "renewablePriceDescriptor"
             ],
             "properties": {
               "type": {
@@ -1362,15 +1076,7 @@
                 "example": "45"
               },
               "descriptor": {
-                "type": "string",
-                "description": "Describes the state of renewables. Gives you an indication of how green power is right now",
-                "enum": [
-                  "best",
-                  "great",
-                  "ok",
-                  "notGreat",
-                  "worst"
-                ]
+                "$ref": "#/components/schemas/RenewableDescriptor"
               }
             }
           },
