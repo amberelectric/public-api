@@ -1,0 +1,1934 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Amber Electric Public API",
+    "version": "1.0"
+  },
+  "servers": [
+    {
+      "url": "https://api.amber.com.au/v1"
+    }
+  ],
+  "components": {
+    "securitySchemes": {
+      "apiKey": {
+        "type": "http",
+        "scheme": "bearer"
+      }
+    },
+    "schemas": {
+      "Channel": {
+        "type": "object",
+        "description": "Describes a power meter channel.\n\nThe General channel provides continuous power - it's the channel all of your appliances and lights are attached to.\n\nControlled loads are only on for a limited time during the day (usually when the load on the network is low, or generation is high) - you may have your hot water system attached to this channel.\n\nThe feed in channel sends power back to the grid - you will have these types of channels if you have solar or batteries.",
+        "required": [
+          "identifier",
+          "type",
+          "tariff"
+        ],
+        "properties": {
+          "identifier": {
+            "type": "string",
+            "description": "Identifier of the channel",
+            "example": "E1"
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "general",
+              "controlledLoad",
+              "feedIn"
+            ],
+            "description": "Channel type.",
+            "example": "general"
+          },
+          "tariff": {
+            "type": "string",
+            "description": "The tariff code of the channel",
+            "example": "A100"
+          }
+        }
+      },
+      "Site": {
+        "type": "object",
+        "required": [
+          "id",
+          "nmi",
+          "channels",
+          "network",
+          "status"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Unique Site Identifier",
+            "example": "01F5A5CRKMZ5BCX9P1S4V990AM"
+          },
+          "nmi": {
+            "type": "string",
+            "description": "National Metering Identifier (NMI) for the site",
+            "example": "3052282872",
+            "minLength": 10,
+            "maxLength": 11
+          },
+          "channels": {
+            "type": "array",
+            "description": "List of channels that are readable from your meter",
+            "items": {
+              "type": "object",
+              "description": "Describes a power meter channel.\n\nThe General channel provides continuous power - it's the channel all of your appliances and lights are attached to.\n\nControlled loads are only on for a limited time during the day (usually when the load on the network is low, or generation is high) - you may have your hot water system attached to this channel.\n\nThe feed in channel sends power back to the grid - you will have these types of channels if you have solar or batteries.",
+              "required": [
+                "identifier",
+                "type",
+                "tariff"
+              ],
+              "properties": {
+                "identifier": {
+                  "type": "string",
+                  "description": "Identifier of the channel",
+                  "example": "E1"
+                },
+                "type": {
+                  "type": "string",
+                  "enum": [
+                    "general",
+                    "controlledLoad",
+                    "feedIn"
+                  ],
+                  "description": "Channel type.",
+                  "example": "general"
+                },
+                "tariff": {
+                  "type": "string",
+                  "description": "The tariff code of the channel",
+                  "example": "A100"
+                }
+              }
+            }
+          },
+          "network": {
+            "type": "string",
+            "description": "The name of the site's network",
+            "example": "Jemena"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "pending",
+              "active",
+              "closed"
+            ],
+            "description": "Site status.\n\nPending sites are still in the process of being transferred. Note: We only include sites that have correct address details. If you expect to see a site, but don't, you may need to contact [info@amber.com.au](mailto:info@amber.com.au) to check that the address is correct.\n\nActive sites are ones that we actively supply electricity to.\n\nClosed sites are old sites that we no longer supply.",
+            "example": "active"
+          },
+          "activeFrom": {
+            "type": "string",
+            "description": "Date the site became active. This date will be in the future for pending sites. It may also be undefined, though if it is, contact [info@amber.com.au](mailto:info@amber.com.au) - there may be an issue with your address. Formatted as a ISO 8601 date when present.",
+            "example": "2022-01-01"
+          },
+          "closedOn": {
+            "type": "string",
+            "description": "Date the site closed. Undefined if the site is pending or active. Formatted as a ISO 8601 date when present.",
+            "example": "2022-05-01"
+          }
+        }
+      },
+      "Range": {
+        "type": "object",
+        "description": "When prices are particularly volatile, the API may return a range of prices that are possible.",
+        "required": [
+          "min",
+          "max"
+        ],
+        "properties": {
+          "min": {
+            "type": "number",
+            "description": "Estimated minimum price (c/kWh)"
+          },
+          "max": {
+            "type": "number",
+            "description": "Estimated maximum price (c/kWh)"
+          }
+        }
+      },
+      "TariffInformation": {
+        "type": "object",
+        "description": "Information about how your tariff affects an interval",
+        "properties": {
+          "period": {
+            "type": "string",
+            "enum": [
+              "offPeak",
+              "shoulder",
+              "solarSponge",
+              "peak"
+            ],
+            "description": "The Time of Use period that is currently active. Only available if the site in on a time of use tariff"
+          },
+          "season": {
+            "type": "string",
+            "enum": [
+              "default",
+              "summer",
+              "autumn",
+              "winter",
+              "spring",
+              "nonSummer",
+              "holiday",
+              "weekend",
+              "weekendHoliday",
+              "weekday"
+            ],
+            "description": "The Time of Use season that is currently active. Only available if the site in on a time of use tariff"
+          },
+          "block": {
+            "type": "number",
+            "minimum": 1,
+            "maximum": 2,
+            "description": "The block that is currently active. Only available in the site in on a block tariff"
+          },
+          "demandWindow": {
+            "type": "boolean",
+            "description": "Is this interval currently in the demand window? Only available if the site in on a demand tariff"
+          }
+        }
+      },
+      "Interval": {
+        "type": "object",
+        "description": "One time interval",
+        "required": [
+          "type",
+          "duration",
+          "spotPerKwh",
+          "perKwh",
+          "date",
+          "nemTime",
+          "startTime",
+          "endTime",
+          "renewables",
+          "channelType",
+          "spikeStatus",
+          "priceDescriptor"
+        ],
+        "properties": {
+          "type": {
+            "type": "string"
+          },
+          "duration": {
+            "type": "number",
+            "description": "Length of the interval in minutes.",
+            "enum": [
+              5,
+              15,
+              30
+            ]
+          },
+          "spotPerKwh": {
+            "type": "number",
+            "description": "NEM spot price (c/kWh). This is the price generators get paid to generate electricity, and what drives the variable component of your perKwh price - includes GST",
+            "example": "6.12"
+          },
+          "perKwh": {
+            "type": "number",
+            "description": "Number of cents you will pay per kilowatt-hour (c/kWh) - includes GST",
+            "example": "24.33"
+          },
+          "date": {
+            "type": "string",
+            "description": "Date the interval belongs to (in NEM time). This may be different to the date component of nemTime, as the last interval of the day ends at 12:00 the following day. Formatted as a ISO 8601 date",
+            "example": "2021-05-05",
+            "format": "date"
+          },
+          "nemTime": {
+            "type": "string",
+            "description": "The interval's NEM time. This represents the time at the end of the interval UTC+10. Formatted as a ISO 8601 time",
+            "example": "2021-05-06T12:30:00+10:00",
+            "format": "date-time"
+          },
+          "startTime": {
+            "type": "string",
+            "description": "Start time of the interval in UTC. Formatted as a ISO 8601 time",
+            "example": "2021-05-05T02:00:01Z",
+            "format": "date-time"
+          },
+          "endTime": {
+            "type": "string",
+            "description": "End time of the interval in UTC. Formatted as a ISO 8601 time",
+            "example": "2021-05-05T02:30:00Z",
+            "format": "date-time"
+          },
+          "renewables": {
+            "type": "number",
+            "description": "Percentage of renewables in the grid",
+            "minimum": 0,
+            "maximum": 100,
+            "example": "45"
+          },
+          "channelType": {
+            "type": "string",
+            "description": "Meter channel type",
+            "enum": [
+              "general",
+              "controlledLoad",
+              "feedIn"
+            ]
+          },
+          "tariffInformation": {
+            "type": "object",
+            "description": "Information about how your tariff is affecting this interval",
+            "nullable": true,
+            "properties": {
+              "period": {
+                "type": "string",
+                "enum": [
+                  "offPeak",
+                  "shoulder",
+                  "solarSponge",
+                  "peak"
+                ],
+                "description": "The Time of Use period that is currently active. Only available if the site in on a time of use tariff"
+              },
+              "season": {
+                "type": "string",
+                "enum": [
+                  "default",
+                  "summer",
+                  "autumn",
+                  "winter",
+                  "spring",
+                  "nonSummer",
+                  "holiday",
+                  "weekend",
+                  "weekendHoliday",
+                  "weekday"
+                ],
+                "description": "The Time of Use season that is currently active. Only available if the site in on a time of use tariff"
+              },
+              "block": {
+                "type": "number",
+                "minimum": 1,
+                "maximum": 2,
+                "description": "The block that is currently active. Only available in the site in on a block tariff"
+              },
+              "demandWindow": {
+                "type": "boolean",
+                "description": "Is this interval currently in the demand window? Only available if the site in on a demand tariff"
+              }
+            }
+          },
+          "spikeStatus": {
+            "type": "string",
+            "description": "Indicates whether this interval will potentially spike, or is currently in a spike state",
+            "enum": [
+              "none",
+              "potential",
+              "spike"
+            ]
+          },
+          "descriptor": {
+            "type": "string",
+            "description": "Describes the current price. Gives you an indication of how cheap the price is in relation to the average VMO and DMO. Note: Negative is no longer used. It has been replaced with extremelyLow.",
+            "enum": [
+              "negative",
+              "extremelyLow",
+              "veryLow",
+              "low",
+              "neutral",
+              "high",
+              "spike"
+            ]
+          }
+        }
+      },
+      "ActualInterval": {
+        "allOf": [
+          {
+            "type": "object",
+            "description": "One time interval",
+            "required": [
+              "type",
+              "duration",
+              "spotPerKwh",
+              "perKwh",
+              "date",
+              "nemTime",
+              "startTime",
+              "endTime",
+              "renewables",
+              "channelType",
+              "spikeStatus",
+              "priceDescriptor"
+            ],
+            "properties": {
+              "type": {
+                "type": "string"
+              },
+              "duration": {
+                "type": "number",
+                "description": "Length of the interval in minutes.",
+                "enum": [
+                  5,
+                  15,
+                  30
+                ]
+              },
+              "spotPerKwh": {
+                "type": "number",
+                "description": "NEM spot price (c/kWh). This is the price generators get paid to generate electricity, and what drives the variable component of your perKwh price - includes GST",
+                "example": "6.12"
+              },
+              "perKwh": {
+                "type": "number",
+                "description": "Number of cents you will pay per kilowatt-hour (c/kWh) - includes GST",
+                "example": "24.33"
+              },
+              "date": {
+                "type": "string",
+                "description": "Date the interval belongs to (in NEM time). This may be different to the date component of nemTime, as the last interval of the day ends at 12:00 the following day. Formatted as a ISO 8601 date",
+                "example": "2021-05-05",
+                "format": "date"
+              },
+              "nemTime": {
+                "type": "string",
+                "description": "The interval's NEM time. This represents the time at the end of the interval UTC+10. Formatted as a ISO 8601 time",
+                "example": "2021-05-06T12:30:00+10:00",
+                "format": "date-time"
+              },
+              "startTime": {
+                "type": "string",
+                "description": "Start time of the interval in UTC. Formatted as a ISO 8601 time",
+                "example": "2021-05-05T02:00:01Z",
+                "format": "date-time"
+              },
+              "endTime": {
+                "type": "string",
+                "description": "End time of the interval in UTC. Formatted as a ISO 8601 time",
+                "example": "2021-05-05T02:30:00Z",
+                "format": "date-time"
+              },
+              "renewables": {
+                "type": "number",
+                "description": "Percentage of renewables in the grid",
+                "minimum": 0,
+                "maximum": 100,
+                "example": "45"
+              },
+              "channelType": {
+                "type": "string",
+                "description": "Meter channel type",
+                "enum": [
+                  "general",
+                  "controlledLoad",
+                  "feedIn"
+                ]
+              },
+              "tariffInformation": {
+                "type": "object",
+                "description": "Information about how your tariff is affecting this interval",
+                "nullable": true,
+                "properties": {
+                  "period": {
+                    "type": "string",
+                    "enum": [
+                      "offPeak",
+                      "shoulder",
+                      "solarSponge",
+                      "peak"
+                    ],
+                    "description": "The Time of Use period that is currently active. Only available if the site in on a time of use tariff"
+                  },
+                  "season": {
+                    "type": "string",
+                    "enum": [
+                      "default",
+                      "summer",
+                      "autumn",
+                      "winter",
+                      "spring",
+                      "nonSummer",
+                      "holiday",
+                      "weekend",
+                      "weekendHoliday",
+                      "weekday"
+                    ],
+                    "description": "The Time of Use season that is currently active. Only available if the site in on a time of use tariff"
+                  },
+                  "block": {
+                    "type": "number",
+                    "minimum": 1,
+                    "maximum": 2,
+                    "description": "The block that is currently active. Only available in the site in on a block tariff"
+                  },
+                  "demandWindow": {
+                    "type": "boolean",
+                    "description": "Is this interval currently in the demand window? Only available if the site in on a demand tariff"
+                  }
+                }
+              },
+              "spikeStatus": {
+                "type": "string",
+                "description": "Indicates whether this interval will potentially spike, or is currently in a spike state",
+                "enum": [
+                  "none",
+                  "potential",
+                  "spike"
+                ]
+              },
+              "descriptor": {
+                "type": "string",
+                "description": "Describes the current price. Gives you an indication of how cheap the price is in relation to the average VMO and DMO. Note: Negative is no longer used. It has been replaced with extremelyLow.",
+                "enum": [
+                  "negative",
+                  "extremelyLow",
+                  "veryLow",
+                  "low",
+                  "neutral",
+                  "high",
+                  "spike"
+                ]
+              }
+            }
+          },
+          {
+            "type": "object",
+            "properties": {
+              "type": {
+                "type": "string",
+                "enum": [
+                  "ActualInterval"
+                ]
+              }
+            }
+          }
+        ]
+      },
+      "ForecastInterval": {
+        "allOf": [
+          {
+            "type": "object",
+            "description": "One time interval",
+            "required": [
+              "type",
+              "duration",
+              "spotPerKwh",
+              "perKwh",
+              "date",
+              "nemTime",
+              "startTime",
+              "endTime",
+              "renewables",
+              "channelType",
+              "spikeStatus",
+              "priceDescriptor"
+            ],
+            "properties": {
+              "type": {
+                "type": "string"
+              },
+              "duration": {
+                "type": "number",
+                "description": "Length of the interval in minutes.",
+                "enum": [
+                  5,
+                  15,
+                  30
+                ]
+              },
+              "spotPerKwh": {
+                "type": "number",
+                "description": "NEM spot price (c/kWh). This is the price generators get paid to generate electricity, and what drives the variable component of your perKwh price - includes GST",
+                "example": "6.12"
+              },
+              "perKwh": {
+                "type": "number",
+                "description": "Number of cents you will pay per kilowatt-hour (c/kWh) - includes GST",
+                "example": "24.33"
+              },
+              "date": {
+                "type": "string",
+                "description": "Date the interval belongs to (in NEM time). This may be different to the date component of nemTime, as the last interval of the day ends at 12:00 the following day. Formatted as a ISO 8601 date",
+                "example": "2021-05-05",
+                "format": "date"
+              },
+              "nemTime": {
+                "type": "string",
+                "description": "The interval's NEM time. This represents the time at the end of the interval UTC+10. Formatted as a ISO 8601 time",
+                "example": "2021-05-06T12:30:00+10:00",
+                "format": "date-time"
+              },
+              "startTime": {
+                "type": "string",
+                "description": "Start time of the interval in UTC. Formatted as a ISO 8601 time",
+                "example": "2021-05-05T02:00:01Z",
+                "format": "date-time"
+              },
+              "endTime": {
+                "type": "string",
+                "description": "End time of the interval in UTC. Formatted as a ISO 8601 time",
+                "example": "2021-05-05T02:30:00Z",
+                "format": "date-time"
+              },
+              "renewables": {
+                "type": "number",
+                "description": "Percentage of renewables in the grid",
+                "minimum": 0,
+                "maximum": 100,
+                "example": "45"
+              },
+              "channelType": {
+                "type": "string",
+                "description": "Meter channel type",
+                "enum": [
+                  "general",
+                  "controlledLoad",
+                  "feedIn"
+                ]
+              },
+              "tariffInformation": {
+                "type": "object",
+                "description": "Information about how your tariff is affecting this interval",
+                "nullable": true,
+                "properties": {
+                  "period": {
+                    "type": "string",
+                    "enum": [
+                      "offPeak",
+                      "shoulder",
+                      "solarSponge",
+                      "peak"
+                    ],
+                    "description": "The Time of Use period that is currently active. Only available if the site in on a time of use tariff"
+                  },
+                  "season": {
+                    "type": "string",
+                    "enum": [
+                      "default",
+                      "summer",
+                      "autumn",
+                      "winter",
+                      "spring",
+                      "nonSummer",
+                      "holiday",
+                      "weekend",
+                      "weekendHoliday",
+                      "weekday"
+                    ],
+                    "description": "The Time of Use season that is currently active. Only available if the site in on a time of use tariff"
+                  },
+                  "block": {
+                    "type": "number",
+                    "minimum": 1,
+                    "maximum": 2,
+                    "description": "The block that is currently active. Only available in the site in on a block tariff"
+                  },
+                  "demandWindow": {
+                    "type": "boolean",
+                    "description": "Is this interval currently in the demand window? Only available if the site in on a demand tariff"
+                  }
+                }
+              },
+              "spikeStatus": {
+                "type": "string",
+                "description": "Indicates whether this interval will potentially spike, or is currently in a spike state",
+                "enum": [
+                  "none",
+                  "potential",
+                  "spike"
+                ]
+              },
+              "descriptor": {
+                "type": "string",
+                "description": "Describes the current price. Gives you an indication of how cheap the price is in relation to the average VMO and DMO. Note: Negative is no longer used. It has been replaced with extremelyLow.",
+                "enum": [
+                  "negative",
+                  "extremelyLow",
+                  "veryLow",
+                  "low",
+                  "neutral",
+                  "high",
+                  "spike"
+                ]
+              }
+            }
+          },
+          {
+            "type": "object",
+            "description": "Returns a forecasted price based on AEMO modelling. This is what AEMO thinks the price will be during the interval.",
+            "properties": {
+              "type": {
+                "type": "string",
+                "enum": [
+                  "ForecastInterval"
+                ]
+              },
+              "range": {
+                "nullable": true,
+                "type": "object",
+                "description": "When prices are particularly volatile, the API may return a range of prices that are possible.",
+                "required": [
+                  "min",
+                  "max"
+                ],
+                "properties": {
+                  "min": {
+                    "type": "number",
+                    "description": "Estimated minimum price (c/kWh)"
+                  },
+                  "max": {
+                    "type": "number",
+                    "description": "Estimated maximum price (c/kWh)"
+                  }
+                }
+              }
+            }
+          }
+        ]
+      },
+      "CurrentInterval": {
+        "allOf": [
+          {
+            "type": "object",
+            "description": "One time interval",
+            "required": [
+              "type",
+              "duration",
+              "spotPerKwh",
+              "perKwh",
+              "date",
+              "nemTime",
+              "startTime",
+              "endTime",
+              "renewables",
+              "channelType",
+              "spikeStatus",
+              "priceDescriptor"
+            ],
+            "properties": {
+              "type": {
+                "type": "string"
+              },
+              "duration": {
+                "type": "number",
+                "description": "Length of the interval in minutes.",
+                "enum": [
+                  5,
+                  15,
+                  30
+                ]
+              },
+              "spotPerKwh": {
+                "type": "number",
+                "description": "NEM spot price (c/kWh). This is the price generators get paid to generate electricity, and what drives the variable component of your perKwh price - includes GST",
+                "example": "6.12"
+              },
+              "perKwh": {
+                "type": "number",
+                "description": "Number of cents you will pay per kilowatt-hour (c/kWh) - includes GST",
+                "example": "24.33"
+              },
+              "date": {
+                "type": "string",
+                "description": "Date the interval belongs to (in NEM time). This may be different to the date component of nemTime, as the last interval of the day ends at 12:00 the following day. Formatted as a ISO 8601 date",
+                "example": "2021-05-05",
+                "format": "date"
+              },
+              "nemTime": {
+                "type": "string",
+                "description": "The interval's NEM time. This represents the time at the end of the interval UTC+10. Formatted as a ISO 8601 time",
+                "example": "2021-05-06T12:30:00+10:00",
+                "format": "date-time"
+              },
+              "startTime": {
+                "type": "string",
+                "description": "Start time of the interval in UTC. Formatted as a ISO 8601 time",
+                "example": "2021-05-05T02:00:01Z",
+                "format": "date-time"
+              },
+              "endTime": {
+                "type": "string",
+                "description": "End time of the interval in UTC. Formatted as a ISO 8601 time",
+                "example": "2021-05-05T02:30:00Z",
+                "format": "date-time"
+              },
+              "renewables": {
+                "type": "number",
+                "description": "Percentage of renewables in the grid",
+                "minimum": 0,
+                "maximum": 100,
+                "example": "45"
+              },
+              "channelType": {
+                "type": "string",
+                "description": "Meter channel type",
+                "enum": [
+                  "general",
+                  "controlledLoad",
+                  "feedIn"
+                ]
+              },
+              "tariffInformation": {
+                "type": "object",
+                "description": "Information about how your tariff is affecting this interval",
+                "nullable": true,
+                "properties": {
+                  "period": {
+                    "type": "string",
+                    "enum": [
+                      "offPeak",
+                      "shoulder",
+                      "solarSponge",
+                      "peak"
+                    ],
+                    "description": "The Time of Use period that is currently active. Only available if the site in on a time of use tariff"
+                  },
+                  "season": {
+                    "type": "string",
+                    "enum": [
+                      "default",
+                      "summer",
+                      "autumn",
+                      "winter",
+                      "spring",
+                      "nonSummer",
+                      "holiday",
+                      "weekend",
+                      "weekendHoliday",
+                      "weekday"
+                    ],
+                    "description": "The Time of Use season that is currently active. Only available if the site in on a time of use tariff"
+                  },
+                  "block": {
+                    "type": "number",
+                    "minimum": 1,
+                    "maximum": 2,
+                    "description": "The block that is currently active. Only available in the site in on a block tariff"
+                  },
+                  "demandWindow": {
+                    "type": "boolean",
+                    "description": "Is this interval currently in the demand window? Only available if the site in on a demand tariff"
+                  }
+                }
+              },
+              "spikeStatus": {
+                "type": "string",
+                "description": "Indicates whether this interval will potentially spike, or is currently in a spike state",
+                "enum": [
+                  "none",
+                  "potential",
+                  "spike"
+                ]
+              },
+              "descriptor": {
+                "type": "string",
+                "description": "Describes the current price. Gives you an indication of how cheap the price is in relation to the average VMO and DMO. Note: Negative is no longer used. It has been replaced with extremelyLow.",
+                "enum": [
+                  "negative",
+                  "extremelyLow",
+                  "veryLow",
+                  "low",
+                  "neutral",
+                  "high",
+                  "spike"
+                ]
+              }
+            }
+          },
+          {
+            "type": "object",
+            "description": "Returns the current interval's forecasted price comprised of the weighted average of 5-minute actual prices and 5-minute forecast prices. In the last 5-minutes of the interval, the price represents the final price for that interval.",
+            "required": [
+              "estimate"
+            ],
+            "properties": {
+              "type": {
+                "type": "string",
+                "enum": [
+                  "CurrentInterval"
+                ]
+              },
+              "range": {
+                "nullable": true,
+                "type": "object",
+                "description": "When prices are particularly volatile, the API may return a range of prices that are possible.",
+                "required": [
+                  "min",
+                  "max"
+                ],
+                "properties": {
+                  "min": {
+                    "type": "number",
+                    "description": "Estimated minimum price (c/kWh)"
+                  },
+                  "max": {
+                    "type": "number",
+                    "description": "Estimated maximum price (c/kWh)"
+                  }
+                }
+              },
+              "estimate": {
+                "type": "boolean",
+                "description": "Shows true the current price is an estimate. Shows false is the price has been locked in."
+              }
+            }
+          }
+        ]
+      },
+      "Usage": {
+        "allOf": [
+          {
+            "type": "object",
+            "description": "One time interval",
+            "required": [
+              "type",
+              "duration",
+              "spotPerKwh",
+              "perKwh",
+              "date",
+              "nemTime",
+              "startTime",
+              "endTime",
+              "renewables",
+              "channelType",
+              "spikeStatus",
+              "priceDescriptor"
+            ],
+            "properties": {
+              "type": {
+                "type": "string"
+              },
+              "duration": {
+                "type": "number",
+                "description": "Length of the interval in minutes.",
+                "enum": [
+                  5,
+                  15,
+                  30
+                ]
+              },
+              "spotPerKwh": {
+                "type": "number",
+                "description": "NEM spot price (c/kWh). This is the price generators get paid to generate electricity, and what drives the variable component of your perKwh price - includes GST",
+                "example": "6.12"
+              },
+              "perKwh": {
+                "type": "number",
+                "description": "Number of cents you will pay per kilowatt-hour (c/kWh) - includes GST",
+                "example": "24.33"
+              },
+              "date": {
+                "type": "string",
+                "description": "Date the interval belongs to (in NEM time). This may be different to the date component of nemTime, as the last interval of the day ends at 12:00 the following day. Formatted as a ISO 8601 date",
+                "example": "2021-05-05",
+                "format": "date"
+              },
+              "nemTime": {
+                "type": "string",
+                "description": "The interval's NEM time. This represents the time at the end of the interval UTC+10. Formatted as a ISO 8601 time",
+                "example": "2021-05-06T12:30:00+10:00",
+                "format": "date-time"
+              },
+              "startTime": {
+                "type": "string",
+                "description": "Start time of the interval in UTC. Formatted as a ISO 8601 time",
+                "example": "2021-05-05T02:00:01Z",
+                "format": "date-time"
+              },
+              "endTime": {
+                "type": "string",
+                "description": "End time of the interval in UTC. Formatted as a ISO 8601 time",
+                "example": "2021-05-05T02:30:00Z",
+                "format": "date-time"
+              },
+              "renewables": {
+                "type": "number",
+                "description": "Percentage of renewables in the grid",
+                "minimum": 0,
+                "maximum": 100,
+                "example": "45"
+              },
+              "channelType": {
+                "type": "string",
+                "description": "Meter channel type",
+                "enum": [
+                  "general",
+                  "controlledLoad",
+                  "feedIn"
+                ]
+              },
+              "tariffInformation": {
+                "type": "object",
+                "description": "Information about how your tariff is affecting this interval",
+                "nullable": true,
+                "properties": {
+                  "period": {
+                    "type": "string",
+                    "enum": [
+                      "offPeak",
+                      "shoulder",
+                      "solarSponge",
+                      "peak"
+                    ],
+                    "description": "The Time of Use period that is currently active. Only available if the site in on a time of use tariff"
+                  },
+                  "season": {
+                    "type": "string",
+                    "enum": [
+                      "default",
+                      "summer",
+                      "autumn",
+                      "winter",
+                      "spring",
+                      "nonSummer",
+                      "holiday",
+                      "weekend",
+                      "weekendHoliday",
+                      "weekday"
+                    ],
+                    "description": "The Time of Use season that is currently active. Only available if the site in on a time of use tariff"
+                  },
+                  "block": {
+                    "type": "number",
+                    "minimum": 1,
+                    "maximum": 2,
+                    "description": "The block that is currently active. Only available in the site in on a block tariff"
+                  },
+                  "demandWindow": {
+                    "type": "boolean",
+                    "description": "Is this interval currently in the demand window? Only available if the site in on a demand tariff"
+                  }
+                }
+              },
+              "spikeStatus": {
+                "type": "string",
+                "description": "Indicates whether this interval will potentially spike, or is currently in a spike state",
+                "enum": [
+                  "none",
+                  "potential",
+                  "spike"
+                ]
+              },
+              "descriptor": {
+                "type": "string",
+                "description": "Describes the current price. Gives you an indication of how cheap the price is in relation to the average VMO and DMO. Note: Negative is no longer used. It has been replaced with extremelyLow.",
+                "enum": [
+                  "negative",
+                  "extremelyLow",
+                  "veryLow",
+                  "low",
+                  "neutral",
+                  "high",
+                  "spike"
+                ]
+              }
+            }
+          },
+          {
+            "type": "object",
+            "required": [
+              "channel",
+              "kwh",
+              "quality",
+              "cost"
+            ],
+            "properties": {
+              "type": {
+                "type": "string",
+                "enum": [
+                  "Usage"
+                ]
+              },
+              "channelIdentifier": {
+                "type": "string",
+                "description": "Meter channel identifier",
+                "example": "E1"
+              },
+              "kwh": {
+                "type": "number",
+                "description": "Number of kWh you consumed or generated. Generated numbers will be negative"
+              },
+              "quality": {
+                "type": "string",
+                "enum": [
+                  "estimated",
+                  "billable"
+                ],
+                "description": "If the metering company has had trouble contacting your meter, they may make an estimate of your usage for that period. Billable data is data that will appear on your bill."
+              },
+              "cost": {
+                "type": "number",
+                "description": "The total cost of your consumption or generation for this period - includes GST"
+              }
+            }
+          }
+        ]
+      },
+      "Renewable": {
+        "type": "object",
+        "description": "Renewable data",
+        "required": [
+          "type",
+          "duration",
+          "date",
+          "nemTime",
+          "startTime",
+          "endTime",
+          "renewables",
+          "renewableDescriptor"
+        ],
+        "properties": {
+          "type": {
+            "type": "string"
+          },
+          "duration": {
+            "type": "number",
+            "description": "Length of the interval in minutes.",
+            "enum": [
+              5,
+              15,
+              30
+            ]
+          },
+          "date": {
+            "type": "string",
+            "description": "Date the interval belongs to (in NEM time). This may be different to the date component of nemTime, as the last interval of the day ends at 12:00 the following day. Formatted as a ISO 8601 date",
+            "example": "2021-05-05",
+            "format": "date"
+          },
+          "nemTime": {
+            "type": "string",
+            "description": "The interval's NEM time. This represents the time at the end of the interval UTC+10. Formatted as a ISO 8601 time",
+            "example": "2021-05-06T12:30:00+10:00",
+            "format": "date-time"
+          },
+          "startTime": {
+            "type": "string",
+            "description": "Start time of the interval in UTC. Formatted as a ISO 8601 time",
+            "example": "2021-05-05T02:00:01Z",
+            "format": "date-time"
+          },
+          "endTime": {
+            "type": "string",
+            "description": "End time of the interval in UTC. Formatted as a ISO 8601 time",
+            "example": "2021-05-05T02:30:00Z",
+            "format": "date-time"
+          },
+          "renewables": {
+            "type": "number",
+            "description": "Percentage of renewables in the grid",
+            "minimum": 0,
+            "maximum": 100,
+            "example": "45"
+          },
+          "descriptor": {
+            "type": "string",
+            "description": "Describes the state of renewables. Gives you an indication of how green power is right now",
+            "enum": [
+              "best",
+              "great",
+              "ok",
+              "notGreat",
+              "worst"
+            ]
+          }
+        }
+      },
+      "ActualRenewable": {
+        "allOf": [
+          {
+            "type": "object",
+            "description": "Renewable data",
+            "required": [
+              "type",
+              "duration",
+              "date",
+              "nemTime",
+              "startTime",
+              "endTime",
+              "renewables",
+              "renewableDescriptor"
+            ],
+            "properties": {
+              "type": {
+                "type": "string"
+              },
+              "duration": {
+                "type": "number",
+                "description": "Length of the interval in minutes.",
+                "enum": [
+                  5,
+                  15,
+                  30
+                ]
+              },
+              "date": {
+                "type": "string",
+                "description": "Date the interval belongs to (in NEM time). This may be different to the date component of nemTime, as the last interval of the day ends at 12:00 the following day. Formatted as a ISO 8601 date",
+                "example": "2021-05-05",
+                "format": "date"
+              },
+              "nemTime": {
+                "type": "string",
+                "description": "The interval's NEM time. This represents the time at the end of the interval UTC+10. Formatted as a ISO 8601 time",
+                "example": "2021-05-06T12:30:00+10:00",
+                "format": "date-time"
+              },
+              "startTime": {
+                "type": "string",
+                "description": "Start time of the interval in UTC. Formatted as a ISO 8601 time",
+                "example": "2021-05-05T02:00:01Z",
+                "format": "date-time"
+              },
+              "endTime": {
+                "type": "string",
+                "description": "End time of the interval in UTC. Formatted as a ISO 8601 time",
+                "example": "2021-05-05T02:30:00Z",
+                "format": "date-time"
+              },
+              "renewables": {
+                "type": "number",
+                "description": "Percentage of renewables in the grid",
+                "minimum": 0,
+                "maximum": 100,
+                "example": "45"
+              },
+              "descriptor": {
+                "type": "string",
+                "description": "Describes the state of renewables. Gives you an indication of how green power is right now",
+                "enum": [
+                  "best",
+                  "great",
+                  "ok",
+                  "notGreat",
+                  "worst"
+                ]
+              }
+            }
+          },
+          {
+            "type": "object",
+            "properties": {
+              "type": {
+                "type": "string",
+                "enum": [
+                  "ActualRenewable"
+                ]
+              }
+            }
+          }
+        ]
+      },
+      "ForecastRenewable": {
+        "allOf": [
+          {
+            "type": "object",
+            "description": "Renewable data",
+            "required": [
+              "type",
+              "duration",
+              "date",
+              "nemTime",
+              "startTime",
+              "endTime",
+              "renewables",
+              "renewableDescriptor"
+            ],
+            "properties": {
+              "type": {
+                "type": "string"
+              },
+              "duration": {
+                "type": "number",
+                "description": "Length of the interval in minutes.",
+                "enum": [
+                  5,
+                  15,
+                  30
+                ]
+              },
+              "date": {
+                "type": "string",
+                "description": "Date the interval belongs to (in NEM time). This may be different to the date component of nemTime, as the last interval of the day ends at 12:00 the following day. Formatted as a ISO 8601 date",
+                "example": "2021-05-05",
+                "format": "date"
+              },
+              "nemTime": {
+                "type": "string",
+                "description": "The interval's NEM time. This represents the time at the end of the interval UTC+10. Formatted as a ISO 8601 time",
+                "example": "2021-05-06T12:30:00+10:00",
+                "format": "date-time"
+              },
+              "startTime": {
+                "type": "string",
+                "description": "Start time of the interval in UTC. Formatted as a ISO 8601 time",
+                "example": "2021-05-05T02:00:01Z",
+                "format": "date-time"
+              },
+              "endTime": {
+                "type": "string",
+                "description": "End time of the interval in UTC. Formatted as a ISO 8601 time",
+                "example": "2021-05-05T02:30:00Z",
+                "format": "date-time"
+              },
+              "renewables": {
+                "type": "number",
+                "description": "Percentage of renewables in the grid",
+                "minimum": 0,
+                "maximum": 100,
+                "example": "45"
+              },
+              "descriptor": {
+                "type": "string",
+                "description": "Describes the state of renewables. Gives you an indication of how green power is right now",
+                "enum": [
+                  "best",
+                  "great",
+                  "ok",
+                  "notGreat",
+                  "worst"
+                ]
+              }
+            }
+          },
+          {
+            "type": "object",
+            "description": "Returns a forecasted renewables based on AEMO modelling. This is what AEMO thinks the renewables will be during the interval.",
+            "properties": {
+              "type": {
+                "type": "string",
+                "enum": [
+                  "ForecastRenewable"
+                ]
+              }
+            }
+          }
+        ]
+      },
+      "CurrentRenewable": {
+        "allOf": [
+          {
+            "type": "object",
+            "description": "Renewable data",
+            "required": [
+              "type",
+              "duration",
+              "date",
+              "nemTime",
+              "startTime",
+              "endTime",
+              "renewables",
+              "renewableDescriptor"
+            ],
+            "properties": {
+              "type": {
+                "type": "string"
+              },
+              "duration": {
+                "type": "number",
+                "description": "Length of the interval in minutes.",
+                "enum": [
+                  5,
+                  15,
+                  30
+                ]
+              },
+              "date": {
+                "type": "string",
+                "description": "Date the interval belongs to (in NEM time). This may be different to the date component of nemTime, as the last interval of the day ends at 12:00 the following day. Formatted as a ISO 8601 date",
+                "example": "2021-05-05",
+                "format": "date"
+              },
+              "nemTime": {
+                "type": "string",
+                "description": "The interval's NEM time. This represents the time at the end of the interval UTC+10. Formatted as a ISO 8601 time",
+                "example": "2021-05-06T12:30:00+10:00",
+                "format": "date-time"
+              },
+              "startTime": {
+                "type": "string",
+                "description": "Start time of the interval in UTC. Formatted as a ISO 8601 time",
+                "example": "2021-05-05T02:00:01Z",
+                "format": "date-time"
+              },
+              "endTime": {
+                "type": "string",
+                "description": "End time of the interval in UTC. Formatted as a ISO 8601 time",
+                "example": "2021-05-05T02:30:00Z",
+                "format": "date-time"
+              },
+              "renewables": {
+                "type": "number",
+                "description": "Percentage of renewables in the grid",
+                "minimum": 0,
+                "maximum": 100,
+                "example": "45"
+              },
+              "descriptor": {
+                "type": "string",
+                "description": "Describes the state of renewables. Gives you an indication of how green power is right now",
+                "enum": [
+                  "best",
+                  "great",
+                  "ok",
+                  "notGreat",
+                  "worst"
+                ]
+              }
+            }
+          },
+          {
+            "type": "object",
+            "description": "Returns the current interval's renewables",
+            "required": [
+              "estimate"
+            ],
+            "properties": {
+              "type": {
+                "type": "string",
+                "enum": [
+                  "CurrentRenewable"
+                ]
+              }
+            }
+          }
+        ]
+      }
+    },
+    "responses": {
+      "UnauthorizedError": {
+        "description": "API key is missing or invalid"
+      },
+      "InternalServerError": {
+        "description": "Internal Server Error"
+      }
+    }
+  },
+  "paths": {
+    "/state/{state}/renewables/current": {
+      "get": {
+        "description": "Returns the current percentage of renewables in the grid",
+        "parameters": [
+          {
+            "name": "state",
+            "description": "State you would like the renewables for. Valid states: nsw, sa, qld, vic",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "next",
+            "description": "Return the _next_ number of forecast intervals",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "previous",
+            "description": "Return the _previous_ number of actual intervals.",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "resolution",
+            "in": "query",
+            "description": "Specify the required interval duration resolution. Valid options: 5, 30. Default: 30",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "enum": [
+                5,
+                30
+              ],
+              "default": 30
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The current percentage of renewables in the grid.",
+            "headers": {
+              "RateLimit-Limit": {
+                "schema": {
+                  "type": "integer"
+                },
+                "description": "The number of requests allowed per rate limit window"
+              },
+              "RateLimit-Remaining": {
+                "schema": {
+                  "type": "integer"
+                },
+                "description": "The remaining quota in the current rate limit window"
+              },
+              "RateLimit-Reset": {
+                "schema": {
+                  "type": "integer"
+                },
+                "description": "The number of seconds until the rate limit window resets"
+              },
+              "RateLimit-Policy": {
+                "schema": {
+                  "type": "string"
+                },
+                "description": "The rate limit policy.<br>See <a href=\"https://datatracker.ietf.org/doc/draft-ietf-httpapi-ratelimit-headers/\" target=\"_blank\" rel=\"noopener noreferrer\">https://datatracker.ietf.org/doc/draft-ietf-httpapi-ratelimit-headers/</a>"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "anyOf": [
+                      {
+                        "$ref": "#/components/schemas/ActualRenewable"
+                      },
+                      {
+                        "$ref": "#/components/schemas/CurrentRenewable"
+                      },
+                      {
+                        "$ref": "#/components/schemas/ForecastRenewable"
+                      }
+                    ],
+                    "discriminator": {
+                      "propertyName": "type",
+                      "mapping": {
+                        "ActualRenewable": "#/components/schemas/ActualRenewable",
+                        "ForecastRenewable": "#/components/schemas/ForecastRenewable",
+                        "CurrentRenewable": "#/components/schemas/CurrentRenewable"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request"
+          },
+          "404": {
+            "description": "State not found"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/sites": {
+      "get": {
+        "description": "Return all sites linked to your account",
+        "security": [
+          {
+            "apiKey": []
+          }
+        ],
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "A list of sites.",
+            "headers": {
+              "RateLimit-Limit": {
+                "schema": {
+                  "type": "integer"
+                },
+                "description": "The number of requests allowed per rate limit window"
+              },
+              "RateLimit-Remaining": {
+                "schema": {
+                  "type": "integer"
+                },
+                "description": "The remaining quota in the current rate limit window"
+              },
+              "RateLimit-Reset": {
+                "schema": {
+                  "type": "integer"
+                },
+                "description": "The number of seconds until the rate limit window resets"
+              },
+              "RateLimit-Policy": {
+                "schema": {
+                  "type": "string"
+                },
+                "description": "The rate limit policy.<br>See <a href=\"https://datatracker.ietf.org/doc/draft-ietf-httpapi-ratelimit-headers/\" target=\"_blank\" rel=\"noopener noreferrer\">https://datatracker.ietf.org/doc/draft-ietf-httpapi-ratelimit-headers/</a>"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "$ref": "#/components/schemas/Site"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "API key is missing or invalid"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/sites/{siteId}/prices": {
+      "get": {
+        "description": "Returns all the prices between the start and end dates",
+        "security": [
+          {
+            "apiKey": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "siteId",
+            "description": "ID of the site you are fetching prices for. Can be found using the `/sites` endpoint",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "startDate",
+            "in": "query",
+            "description": "Return all prices for each interval on and after this day. Defaults to today.",
+            "example": "2021-05-05",
+            "required": false,
+            "schema": {
+              "format": "date"
+            }
+          },
+          {
+            "name": "endDate",
+            "in": "query",
+            "description": "Return all prices for each interval on and before this day. Defaults to today.",
+            "example": "2021-05-05",
+            "required": false,
+            "schema": {
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "resolution",
+            "in": "query",
+            "description": "Specify the required interval duration resolution. Valid options: 5, 30. Default: 30",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "enum": [
+                5,
+                30
+              ],
+              "default": 30
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A list of priced intervals<br><br>Return Order: General > Controlled Load > Feed In.<br><br>**NOTE**: If a channel is added or removed the index offset will change. It is best to filter or group the array by channel type.",
+            "headers": {
+              "RateLimit-Limit": {
+                "schema": {
+                  "type": "integer"
+                },
+                "description": "The number of requests allowed per rate limit window"
+              },
+              "RateLimit-Remaining": {
+                "schema": {
+                  "type": "integer"
+                },
+                "description": "The remaining quota in the current rate limit window"
+              },
+              "RateLimit-Reset": {
+                "schema": {
+                  "type": "integer"
+                },
+                "description": "The number of seconds until the rate limit window resets"
+              },
+              "RateLimit-Policy": {
+                "schema": {
+                  "type": "string"
+                },
+                "description": "The rate limit policy.<br>See <a href=\"https://datatracker.ietf.org/doc/draft-ietf-httpapi-ratelimit-headers/\" target=\"_blank\" rel=\"noopener noreferrer\">https://datatracker.ietf.org/doc/draft-ietf-httpapi-ratelimit-headers/</a>"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "anyOf": [
+                      {
+                        "$ref": "#/components/schemas/ActualInterval"
+                      },
+                      {
+                        "$ref": "#/components/schemas/CurrentInterval"
+                      },
+                      {
+                        "$ref": "#/components/schemas/ForecastInterval"
+                      }
+                    ],
+                    "discriminator": {
+                      "propertyName": "type",
+                      "mapping": {
+                        "ActualInterval": "#/components/schemas/ActualInterval",
+                        "ForecastInterval": "#/components/schemas/ForecastInterval",
+                        "CurrentInterval": "#/components/schemas/CurrentInterval"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request"
+          },
+          "401": {
+            "description": "API key is missing or invalid"
+          },
+          "404": {
+            "description": "Site not found"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/sites/{siteId}/prices/current": {
+      "get": {
+        "description": "Returns the current price",
+        "security": [
+          {
+            "apiKey": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "siteId",
+            "description": "ID of the site you are fetching prices for. Can be found using the `/sites` enpoint",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "next",
+            "description": "Return the _next_ number of forecast intervals",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "previous",
+            "description": "Return the _previous_ number of actual intervals.",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "resolution",
+            "in": "query",
+            "description": "Specify the required interval duration resolution. Valid options: 30. Default: 30",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "enum": [
+                30
+              ],
+              "default": 30
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The current price on all channels.<br><br>Return Order: General > Controlled Load > Feed In.<br><br>**NOTE**: If a channel is added or removed the index offset will change. It is best to filter or group the array by channel type.",
+            "headers": {
+              "RateLimit-Limit": {
+                "schema": {
+                  "type": "integer"
+                },
+                "description": "The number of requests allowed per rate limit window"
+              },
+              "RateLimit-Remaining": {
+                "schema": {
+                  "type": "integer"
+                },
+                "description": "The remaining quota in the current rate limit window"
+              },
+              "RateLimit-Reset": {
+                "schema": {
+                  "type": "integer"
+                },
+                "description": "The number of seconds until the rate limit window resets"
+              },
+              "RateLimit-Policy": {
+                "schema": {
+                  "type": "string"
+                },
+                "description": "The rate limit policy.<br>See <a href=\"https://datatracker.ietf.org/doc/draft-ietf-httpapi-ratelimit-headers/\" target=\"_blank\" rel=\"noopener noreferrer\">https://datatracker.ietf.org/doc/draft-ietf-httpapi-ratelimit-headers/</a>"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "anyOf": [
+                      {
+                        "$ref": "#/components/schemas/ActualInterval"
+                      },
+                      {
+                        "$ref": "#/components/schemas/CurrentInterval"
+                      },
+                      {
+                        "$ref": "#/components/schemas/ForecastInterval"
+                      }
+                    ],
+                    "discriminator": {
+                      "propertyName": "type",
+                      "mapping": {
+                        "ActualInterval": "#/components/schemas/ActualInterval",
+                        "ForecastInterval": "#/components/schemas/ForecastInterval",
+                        "CurrentInterval": "#/components/schemas/CurrentInterval"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request"
+          },
+          "401": {
+            "description": "API key is missing or invalid"
+          },
+          "404": {
+            "description": "Site not found"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/sites/{siteId}/usage": {
+      "get": {
+        "description": "Returns all usage data between the start and end dates. The API can only return 90-days worth of data.",
+        "security": [
+          {
+            "apiKey": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "siteId",
+            "description": "ID of the site you are fetching usage for. Can be found using the `/sites` enpoint",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "startDate",
+            "in": "query",
+            "description": "Return all usage for each interval on and after this day.",
+            "example": "2021-05-05",
+            "required": true,
+            "schema": {
+              "format": "date"
+            }
+          },
+          {
+            "name": "endDate",
+            "in": "query",
+            "description": "Return all usage for each interval on and before this day.",
+            "example": "2021-05-05",
+            "required": true,
+            "schema": {
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "resolution",
+            "in": "query",
+            "description": "Specify the required interval duration resolution. Valid options: 30. Default: 30",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "enum": [
+                30
+              ],
+              "default": 30
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Usage for the requested period.<br><br>Return Order: General > Controlled Load > Feed In.<br><br>**NOTE**: If a channel is added or removed the index offset will change. It is best to filter or group the array by channel type.",
+            "headers": {
+              "RateLimit-Limit": {
+                "schema": {
+                  "type": "integer"
+                },
+                "description": "The number of requests allowed per rate limit window"
+              },
+              "RateLimit-Remaining": {
+                "schema": {
+                  "type": "integer"
+                },
+                "description": "The remaining quota in the current rate limit window"
+              },
+              "RateLimit-Reset": {
+                "schema": {
+                  "type": "integer"
+                },
+                "description": "The number of seconds until the rate limit window resets"
+              },
+              "RateLimit-Policy": {
+                "schema": {
+                  "type": "string"
+                },
+                "description": "The rate limit policy.<br>See <a href=\"https://datatracker.ietf.org/doc/draft-ietf-httpapi-ratelimit-headers/\" target=\"_blank\" rel=\"noopener noreferrer\">https://datatracker.ietf.org/doc/draft-ietf-httpapi-ratelimit-headers/</a>"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Usage"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request"
+          },
+          "401": {
+            "description": "API key is missing or invalid"
+          },
+          "404": {
+            "description": "Site not found"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    }
+  }
+}
