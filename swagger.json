@@ -560,6 +560,8 @@
     "/state/{state}/renewables/current": {
       "get": {
         "description": "Returns the current percentage of renewables in the grid",
+        "security": [
+        ],
         "parameters": [
           {
             "name": "state",
