@@ -627,7 +627,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "anyOf": [
+                    "oneOf": [
                       {
                         "$ref": "#/components/schemas/ActualRenewable"
                       },
@@ -786,7 +786,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "anyOf": [
+                    "oneOf": [
                       {
                         "$ref": "#/components/schemas/ActualInterval"
                       },
@@ -897,7 +897,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "anyOf": [
+                    "oneOf": [
                       {
                         "$ref": "#/components/schemas/ActualInterval"
                       },
