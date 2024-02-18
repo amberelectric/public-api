@@ -521,6 +521,32 @@
         ]
       }
     },
+    "headers": {
+      "RateLimit-Limit": {
+        "schema": {
+          "type": "integer"
+        },
+        "description": "The number of requests allowed per rate limit window"
+      },
+      "RateLimit-Remaining": {
+        "schema": {
+          "type": "integer"
+        },
+        "description": "The remaining quota in the current rate limit window"
+      },
+      "RateLimit-Reset": {
+        "schema": {
+          "type": "integer"
+        },
+        "description": "The number of seconds until the rate limit window resets"
+      },
+      "RateLimit-Policy": {
+        "schema": {
+          "type": "string"
+        },
+        "description": "The rate limit policy.<br>See <a href=\"https://datatracker.ietf.org/doc/draft-ietf-httpapi-ratelimit-headers/\" target=\"_blank\" rel=\"noopener noreferrer\">https://datatracker.ietf.org/doc/draft-ietf-httpapi-ratelimit-headers/</a>"
+      }
+    },
     "responses": {
       "UnauthorizedError": {
         "description": "API key is missing or invalid"
@@ -582,28 +608,16 @@
             "description": "The current percentage of renewables in the grid.",
             "headers": {
               "RateLimit-Limit": {
-                "schema": {
-                  "type": "integer"
-                },
-                "description": "The number of requests allowed per rate limit window"
+                "$ref": "#/components/headers/RateLimit-Limit"
               },
               "RateLimit-Remaining": {
-                "schema": {
-                  "type": "integer"
-                },
-                "description": "The remaining quota in the current rate limit window"
+                "$ref": "#/components/headers/RateLimit-Remaining"
               },
               "RateLimit-Reset": {
-                "schema": {
-                  "type": "integer"
-                },
-                "description": "The number of seconds until the rate limit window resets"
+                "$ref": "#/components/headers/RateLimit-Reset"
               },
               "RateLimit-Policy": {
-                "schema": {
-                  "type": "string"
-                },
-                "description": "The rate limit policy.<br>See <a href=\"https://datatracker.ietf.org/doc/draft-ietf-httpapi-ratelimit-headers/\" target=\"_blank\" rel=\"noopener noreferrer\">https://datatracker.ietf.org/doc/draft-ietf-httpapi-ratelimit-headers/</a>"
+                "$ref": "#/components/headers/RateLimit-Policy"
               }
             },
             "content": {
@@ -661,28 +675,16 @@
             "description": "A list of sites.",
             "headers": {
               "RateLimit-Limit": {
-                "schema": {
-                  "type": "integer"
-                },
-                "description": "The number of requests allowed per rate limit window"
+                "$ref": "#/components/headers/RateLimit-Limit"
               },
               "RateLimit-Remaining": {
-                "schema": {
-                  "type": "integer"
-                },
-                "description": "The remaining quota in the current rate limit window"
+                "$ref": "#/components/headers/RateLimit-Remaining"
               },
               "RateLimit-Reset": {
-                "schema": {
-                  "type": "integer"
-                },
-                "description": "The number of seconds until the rate limit window resets"
+                "$ref": "#/components/headers/RateLimit-Reset"
               },
               "RateLimit-Policy": {
-                "schema": {
-                  "type": "string"
-                },
-                "description": "The rate limit policy.<br>See <a href=\"https://datatracker.ietf.org/doc/draft-ietf-httpapi-ratelimit-headers/\" target=\"_blank\" rel=\"noopener noreferrer\">https://datatracker.ietf.org/doc/draft-ietf-httpapi-ratelimit-headers/</a>"
+                "$ref": "#/components/headers/RateLimit-Policy"
               }
             },
             "content": {
@@ -765,28 +767,16 @@
             "description": "A list of priced intervals<br><br>Return Order: General > Controlled Load > Feed In.<br><br>**NOTE**: If a channel is added or removed the index offset will change. It is best to filter or group the array by channel type.",
             "headers": {
               "RateLimit-Limit": {
-                "schema": {
-                  "type": "integer"
-                },
-                "description": "The number of requests allowed per rate limit window"
+                "$ref": "#/components/headers/RateLimit-Limit"
               },
               "RateLimit-Remaining": {
-                "schema": {
-                  "type": "integer"
-                },
-                "description": "The remaining quota in the current rate limit window"
+                "$ref": "#/components/headers/RateLimit-Remaining"
               },
               "RateLimit-Reset": {
-                "schema": {
-                  "type": "integer"
-                },
-                "description": "The number of seconds until the rate limit window resets"
+                "$ref": "#/components/headers/RateLimit-Reset"
               },
               "RateLimit-Policy": {
-                "schema": {
-                  "type": "string"
-                },
-                "description": "The rate limit policy.<br>See <a href=\"https://datatracker.ietf.org/doc/draft-ietf-httpapi-ratelimit-headers/\" target=\"_blank\" rel=\"noopener noreferrer\">https://datatracker.ietf.org/doc/draft-ietf-httpapi-ratelimit-headers/</a>"
+                "$ref": "#/components/headers/RateLimit-Policy"
               }
             },
             "content": {
@@ -888,28 +878,16 @@
             "description": "The current price on all channels.<br><br>Return Order: General > Controlled Load > Feed In.<br><br>**NOTE**: If a channel is added or removed the index offset will change. It is best to filter or group the array by channel type.",
             "headers": {
               "RateLimit-Limit": {
-                "schema": {
-                  "type": "integer"
-                },
-                "description": "The number of requests allowed per rate limit window"
+                "$ref": "#/components/headers/RateLimit-Limit"
               },
               "RateLimit-Remaining": {
-                "schema": {
-                  "type": "integer"
-                },
-                "description": "The remaining quota in the current rate limit window"
+                "$ref": "#/components/headers/RateLimit-Remaining"
               },
               "RateLimit-Reset": {
-                "schema": {
-                  "type": "integer"
-                },
-                "description": "The number of seconds until the rate limit window resets"
+                "$ref": "#/components/headers/RateLimit-Reset"
               },
               "RateLimit-Policy": {
-                "schema": {
-                  "type": "string"
-                },
-                "description": "The rate limit policy.<br>See <a href=\"https://datatracker.ietf.org/doc/draft-ietf-httpapi-ratelimit-headers/\" target=\"_blank\" rel=\"noopener noreferrer\">https://datatracker.ietf.org/doc/draft-ietf-httpapi-ratelimit-headers/</a>"
+                "$ref": "#/components/headers/RateLimit-Policy"
               }
             },
             "content": {
@@ -1015,28 +993,16 @@
             "description": "Usage for the requested period.<br><br>Return Order: General > Controlled Load > Feed In.<br><br>**NOTE**: If a channel is added or removed the index offset will change. It is best to filter or group the array by channel type.",
             "headers": {
               "RateLimit-Limit": {
-                "schema": {
-                  "type": "integer"
-                },
-                "description": "The number of requests allowed per rate limit window"
+                "$ref": "#/components/headers/RateLimit-Limit"
               },
               "RateLimit-Remaining": {
-                "schema": {
-                  "type": "integer"
-                },
-                "description": "The remaining quota in the current rate limit window"
+                "$ref": "#/components/headers/RateLimit-Remaining"
               },
               "RateLimit-Reset": {
-                "schema": {
-                  "type": "integer"
-                },
-                "description": "The number of seconds until the rate limit window resets"
+                "$ref": "#/components/headers/RateLimit-Reset"
               },
               "RateLimit-Policy": {
-                "schema": {
-                  "type": "string"
-                },
-                "description": "The rate limit policy.<br>See <a href=\"https://datatracker.ietf.org/doc/draft-ietf-httpapi-ratelimit-headers/\" target=\"_blank\" rel=\"noopener noreferrer\">https://datatracker.ietf.org/doc/draft-ietf-httpapi-ratelimit-headers/</a>"
+                "$ref": "#/components/headers/RateLimit-Policy"
               }
             },
             "content": {
