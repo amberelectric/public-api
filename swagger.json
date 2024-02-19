@@ -273,7 +273,9 @@
           },
           "tariffInformation": {
             "nullable": true,
-            "$ref": "#/components/schemas/TariffInformation"
+            "allOf": [
+              "$ref": "#/components/schemas/TariffInformation"
+            ]
           },
           "spikeStatus": {
             "$ref": "#/components/schemas/SpikeStatus"
@@ -318,7 +320,9 @@
               },
               "range": {
                 "nullable": true,
-                "$ref": "#/components/schemas/Range"
+                "allOf": [
+                  "$ref": "#/components/schemas/Range"
+                ]
               }
             }
           }
@@ -344,7 +348,9 @@
               },
               "range": {
                 "nullable": true,
-                "$ref": "#/components/schemas/Range"
+                "allOf": [
+                  "$ref": "#/components/schemas/Range"
+                ]
               },
               "estimate": {
                 "type": "boolean",
