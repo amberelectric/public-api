@@ -200,6 +200,27 @@
           }
         }
       },
+      "IntervalMetaType": {
+        "oneOf": [
+          {
+            "$ref": "#/components/schemas/ActualInterval"
+          },
+          {
+            "$ref": "#/components/schemas/CurrentInterval"
+          },
+          {
+            "$ref": "#/components/schemas/ForecastInterval"
+          }
+        ],
+        "discriminator": {
+          "propertyName": "type",
+          "mapping": {
+            "ActualInterval": "#/components/schemas/ActualInterval",
+            "ForecastInterval": "#/components/schemas/ForecastInterval",
+            "CurrentInterval": "#/components/schemas/CurrentInterval"
+          }
+        }
+      },
       "Interval": {
         "type": "object",
         "description": "One time interval",
@@ -766,25 +787,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "oneOf": [
-                      {
-                        "$ref": "#/components/schemas/ActualInterval"
-                      },
-                      {
-                        "$ref": "#/components/schemas/CurrentInterval"
-                      },
-                      {
-                        "$ref": "#/components/schemas/ForecastInterval"
-                      }
-                    ],
-                    "discriminator": {
-                      "propertyName": "type",
-                      "mapping": {
-                        "ActualInterval": "#/components/schemas/ActualInterval",
-                        "ForecastInterval": "#/components/schemas/ForecastInterval",
-                        "CurrentInterval": "#/components/schemas/CurrentInterval"
-                      }
-                    }
+                    "$ref": "#/components/schemas/IntervalMetaType"
                   }
                 }
               }
@@ -877,25 +880,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "oneOf": [
-                      {
-                        "$ref": "#/components/schemas/ActualInterval"
-                      },
-                      {
-                        "$ref": "#/components/schemas/CurrentInterval"
-                      },
-                      {
-                        "$ref": "#/components/schemas/ForecastInterval"
-                      }
-                    ],
-                    "discriminator": {
-                      "propertyName": "type",
-                      "mapping": {
-                        "ActualInterval": "#/components/schemas/ActualInterval",
-                        "ForecastInterval": "#/components/schemas/ForecastInterval",
-                        "CurrentInterval": "#/components/schemas/CurrentInterval"
-                      }
-                    }
+                    "$ref": "#/components/schemas/IntervalMetaType"
                   }
                 }
               }
