@@ -362,7 +362,7 @@
           {
             "type": "object",
             "required": [
-              "channel",
+              "channelIdentifier",
               "kwh",
               "quality",
               "cost"
