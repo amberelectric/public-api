@@ -400,6 +400,27 @@
           }
         ]
       },
+      "RenewableMetaType": {
+        "oneOf": [
+          {
+            "$ref": "#/components/schemas/ActualRenewable"
+          },
+          {
+            "$ref": "#/components/schemas/CurrentRenewable"
+          },
+          {
+            "$ref": "#/components/schemas/ForecastRenewable"
+          }
+        ],
+        "discriminator": {
+          "propertyName": "type",
+          "mapping": {
+            "ActualRenewable": "#/components/schemas/ActualRenewable",
+            "ForecastRenewable": "#/components/schemas/ForecastRenewable",
+            "CurrentRenewable": "#/components/schemas/CurrentRenewable"
+          }
+        }
+      },
       "Renewable": {
         "type": "object",
         "description": "Renewable data",
@@ -592,25 +613,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "oneOf": [
-                      {
-                        "$ref": "#/components/schemas/ActualRenewable"
-                      },
-                      {
-                        "$ref": "#/components/schemas/CurrentRenewable"
-                      },
-                      {
-                        "$ref": "#/components/schemas/ForecastRenewable"
-                      }
-                    ],
-                    "discriminator": {
-                      "propertyName": "type",
-                      "mapping": {
-                        "ActualRenewable": "#/components/schemas/ActualRenewable",
-                        "ForecastRenewable": "#/components/schemas/ForecastRenewable",
-                        "CurrentRenewable": "#/components/schemas/CurrentRenewable"
-                      }
-                    }
+                    "$ref": "#/components/schemas/RenewableMetaType"
                   }
                 }
               }
