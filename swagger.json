@@ -274,7 +274,9 @@
           "tariffInformation": {
             "nullable": true,
             "allOf": [
-              "$ref": "#/components/schemas/TariffInformation"
+              {
+                "$ref": "#/components/schemas/TariffInformation"
+              }
             ]
           },
           "spikeStatus": {
@@ -321,7 +323,9 @@
               "range": {
                 "nullable": true,
                 "allOf": [
-                  "$ref": "#/components/schemas/Range"
+                  {
+                    "$ref": "#/components/schemas/Range"
+                  }
                 ]
               }
             }
@@ -349,7 +353,9 @@
               "range": {
                 "nullable": true,
                 "allOf": [
-                  "$ref": "#/components/schemas/Range"
+                  {
+                    "$ref": "#/components/schemas/Range"
+                  }
                 ]
               },
               "estimate": {
@@ -563,8 +569,8 @@
     "/state/{state}/renewables/current": {
       "get": {
         "description": "Returns the current percentage of renewables in the grid",
-        "security": [
-        ],
+        "operationId": "getCurrentRenewables",
+        "security": [],
         "parameters": [
           {
             "name": "state",
@@ -669,6 +675,7 @@
     "/sites": {
       "get": {
         "description": "Return all sites linked to your account",
+        "operationId": "getSites",
         "security": [
           {
             "apiKey": []
@@ -715,6 +722,7 @@
     "/sites/{siteId}/prices": {
       "get": {
         "description": "Returns all the prices between the start and end dates",
+        "operationId": "getPrices",
         "security": [
           {
             "apiKey": []
@@ -831,6 +839,7 @@
     "/sites/{siteId}/prices/current": {
       "get": {
         "description": "Returns the current price",
+        "operationId": "getCurrentPrices",
         "security": [
           {
             "apiKey": []
@@ -942,6 +951,7 @@
     "/sites/{siteId}/usage": {
       "get": {
         "description": "Returns all usage data between the start and end dates. The API can only return 90-days worth of data.",
+        "operationId": "getUsage",
         "security": [
           {
             "apiKey": []
