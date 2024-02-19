@@ -506,9 +506,6 @@
           {
             "type": "object",
             "description": "Returns the current interval's renewables",
-            "required": [
-              "estimate"
-            ],
             "properties": {
               "type": {
                 "type": "string",
