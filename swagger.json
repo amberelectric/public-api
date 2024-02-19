@@ -218,6 +218,9 @@
           "descriptor"
         ],
         "properties": {
+          "type": {
+            "type": "string"
+          },
           "duration": {
             "type": "number",
             "description": "Length of the interval in minutes.",
@@ -287,17 +290,6 @@
         "allOf": [
           {
             "$ref": "#/components/schemas/Interval"
-          },
-          {
-            "type": "object",
-            "properties": {
-              "type": {
-                "type": "string",
-                "enum": [
-                  "ActualInterval"
-                ]
-              }
-            }
           }
         ]
       },
@@ -310,12 +302,6 @@
             "type": "object",
             "description": "Returns a forecasted price based on AEMO modelling. This is what AEMO thinks the price will be during the interval.",
             "properties": {
-              "type": {
-                "type": "string",
-                "enum": [
-                  "ForecastInterval"
-                ]
-              },
               "range": {
                 "nullable": true,
                 "$ref": "#/components/schemas/Range"
@@ -336,12 +322,6 @@
               "estimate"
             ],
             "properties": {
-              "type": {
-                "type": "string",
-                "enum": [
-                  "CurrentInterval"
-                ]
-              },
               "range": {
                 "nullable": true,
                 "$ref": "#/components/schemas/Range"
