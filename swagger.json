@@ -230,12 +230,12 @@
           "spotPerKwh": {
             "type": "number",
             "description": "NEM spot price (c/kWh). This is the price generators get paid to generate electricity, and what drives the variable component of your perKwh price - includes GST",
-            "example": "6.12"
+            "example": 6.12
           },
           "perKwh": {
             "type": "number",
             "description": "Number of cents you will pay per kilowatt-hour (c/kWh) - includes GST",
-            "example": "24.33"
+            "example": 24.33
           },
           "date": {
             "type": "string",
@@ -266,7 +266,7 @@
             "description": "Percentage of renewables in the grid",
             "minimum": 0,
             "maximum": 100,
-            "example": "45"
+            "example": 45
           },
           "channelType": {
             "$ref": "#/components/schemas/ChannelType"
@@ -454,7 +454,7 @@
             "description": "Percentage of renewables in the grid",
             "minimum": 0,
             "maximum": 100,
-            "example": "45"
+            "example": 45
           },
           "descriptor": {
             "$ref": "#/components/schemas/RenewableDescriptor"
