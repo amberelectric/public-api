@@ -466,55 +466,22 @@
         "allOf": [
           {
             "$ref": "#/components/schemas/Renewable"
-          },
-          {
-            "type": "object",
-            "properties": {
-              "type": {
-                "type": "string",
-                "enum": [
-                  "ActualRenewable"
-                ]
-              }
-            }
           }
         ]
       },
       "ForecastRenewable": {
+        "description": "Returns a forecasted renewables based on AEMO modelling. This is what AEMO thinks the renewables will be during the interval.",
         "allOf": [
           {
             "$ref": "#/components/schemas/Renewable"
-          },
-          {
-            "type": "object",
-            "description": "Returns a forecasted renewables based on AEMO modelling. This is what AEMO thinks the renewables will be during the interval.",
-            "properties": {
-              "type": {
-                "type": "string",
-                "enum": [
-                  "ForecastRenewable"
-                ]
-              }
-            }
           }
         ]
       },
       "CurrentRenewable": {
+        "description": "Returns the current interval's renewables",
         "allOf": [
           {
             "$ref": "#/components/schemas/Renewable"
-          },
-          {
-            "type": "object",
-            "description": "Returns the current interval's renewables",
-            "properties": {
-              "type": {
-                "type": "string",
-                "enum": [
-                  "CurrentRenewable"
-                ]
-              }
-            }
           }
         ]
       }
