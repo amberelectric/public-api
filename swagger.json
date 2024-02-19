@@ -219,7 +219,7 @@
         ],
         "properties": {
           "duration": {
-            "type": "number",
+            "type": "integer",
             "description": "Length of the interval in minutes.",
             "enum": [
               5,
@@ -417,7 +417,7 @@
             "type": "string"
           },
           "duration": {
-            "type": "number",
+            "type": "integer",
             "description": "Length of the interval in minutes.",
             "enum": [
               5,
