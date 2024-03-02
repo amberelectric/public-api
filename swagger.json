@@ -142,7 +142,7 @@
       },
       "Range": {
         "type": "object",
-        "description": "When prices are particularly volatile, the API may return a range of prices that are possible.",
+        "description": "When prices are particularly volatile, the API may return a range of NEM spot prices (c/kWh) that are possible.",
         "required": [
           "min",
           "max"
