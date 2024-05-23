@@ -5,7 +5,8 @@ blueprint:
   input:
     amber_forecast:
       name: Amber Forecast Price
-      description: The Amber price forecast sensor to use. If in doubt, use General
+      description:
+        The Amber price forecast sensor to use. If in doubt, use General
         Price.
       selector:
         entity:
@@ -14,9 +15,10 @@ blueprint:
 
 sequence:
   - variables:
+      entity: !input amber_forecast
       intervals: "{{ block_size * 2 }}"
       prices: >-
-        {{ state_attr(!input amber_forecast, 'forecasts') |
+        {{ state_attr(entity, 'forecasts') |
         map(attribute='per_kwh') | list }}
       averages: >
         {% set data = namespace(averages=[]) %}  {% for index in
