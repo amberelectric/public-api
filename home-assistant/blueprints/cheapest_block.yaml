@@ -1,0 +1,44 @@
+blueprint:
+  name: Cheapest power price
+  description: Returns the cheapest average block of power. The block size is variable.
+  domain: script
+  input:
+    amber_forecast:
+      name: Amber Forecast Price
+      description: The Amber price forecast sensor to use. If in doubt, use General
+        Price.
+      selector:
+        entity:
+          integration: amberelectric
+          domain: sensor
+
+sequence:
+  - variables:
+      intervals: "{{ block_size * 2 }}"
+      prices: >-
+        {{ state_attr(!input amber_forecast, 'forecasts') |
+        map(attribute='per_kwh') | list }}
+      averages: >
+        {% set data = namespace(averages=[]) %}  {% for index in
+        range(prices|count - intervals) %}
+          {% set data.averages = data.averages + [(prices[index:index+intervals] | average)] %}
+        {% endfor %} {{data.averages}}
+      interval_index: >
+        {% if min_max == "max" %}
+          {{averages.index(averages | max)}}
+        {% else %}	
+          {{averages.index(averages | min)}}
+        {% endif %}
+      price: "{{(averages[interval_index] * 100) | round | int}}"
+      response:
+        block_size: "{{ block_size }}"
+        starts_in_hours: "{{ interval_index / 2 }}"
+        cents_per_kwh: "{{ price }}"
+				min_max: >
+          {% if min_max == "max" %}
+            max
+          {% else %}
+            min
+          {% endif %}
+  - stop: Returning values
+    response_variable: response
