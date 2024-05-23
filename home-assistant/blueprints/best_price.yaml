@@ -1,0 +1,66 @@
+blueprint:
+  name: Best power price
+  description: Returns the best average block of power. The block size is variable. You can ask for the minimum or maximum.
+  domain: script
+
+fields:
+  entity_id:
+    name: Amber Forecast Price
+    description: The Amber price forecast sensor to use. If in doubt, use the general forecast.
+    required: true
+    selector:
+      entity:
+        integration: amberelectric
+        domain: sensor
+
+  block_size:
+    name: Block size
+    description: The size of the block in hours.
+    required: true
+    default: 1
+    selector:
+      number:
+
+  min_max:
+    name: Cheapest or most expensive?
+    description: Would you like to see the cheapest or most expensive block?
+    default: min
+    required: true
+    selector:
+      select:
+        options:
+          - label: Cheapest
+            value: min
+          - label: Most expensive
+            value: max
+
+sequence:
+  - variables:
+      intervals: "{{ block_size * 2 }}"
+      prices: >-
+        {{ state_attr(entity_id, 'forecasts') |
+        map(attribute='per_kwh') | list }}
+      averages: >
+        {% set data = namespace(averages=[]) %}  
+        {% for index in range(prices|count - intervals) %}
+          {% set data.averages = data.averages + [(prices[index:index+intervals] | average)] %}
+        {% endfor %} {{data.averages}}
+      interval_index: >
+        {% if min_max == "max" %}
+          {{averages.index(averages | max)}}
+        {% else %}  
+          {{averages.index(averages | min)}}
+        {% endif %}
+      price: "{{(averages[interval_index] * 100) | round | int}}"
+      response:
+        block_size: "{{ block_size }}"
+        starts_in_hours: "{{ interval_index / 2 }}"
+        cents_per_kwh: "{{ price }}"
+        min_max: >
+          {% if min_max == "max" %}
+            max
+          {% else %}
+            min
+          {% endif %}
+  - stop: Returning values
+    response_variable: response
